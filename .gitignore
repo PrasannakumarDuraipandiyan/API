@@ -1,0 +1,54 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/EmployeeAPI/bin
+/EmployeeAPI/obj
+/EmployeeAPI.Application/bin
+/EmployeeAPI.Application/obj
+/EmployeeAPI.Domain/bin
+/EmployeeAPI.Domain/obj
+/EmployeeAPI.Infrastructure/bin
+/EmployeeAPI.Infrastructure/obj
+
+
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio specific
+.vs/
+
+# Log files
+*.log
+
+# Generated files
+*.g.cs
+*.g.i.cs
+
+# Configuration files
+appsettings.Development.json
+appsettings.Local.json
+
+# Package management
+*.nupkg
+packages/
+
+# Publish files
+*.publish.xml
+*.azurePubxml
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE specific
+.vscode/
+
