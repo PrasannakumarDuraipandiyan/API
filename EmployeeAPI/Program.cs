@@ -1,5 +1,4 @@
 using EmployeeAPI.Application.Mappings;
-using EmployeeAPI.Application.Validators;
 using EmployeeAPI.Domain.Repositories;
 using EmployeeAPI.Infrastructure.Data;
 using EmployeeAPI.Infrastructure.Repositories;
@@ -13,12 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
 builder.Services.AddDbContext<EmployeeDbContext>(options => options.UseInMemoryDatabase("EmployeeDb"));
 
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddValidatorsFromAssemblyContaining<EmployeeDtoValidator>();
 
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
