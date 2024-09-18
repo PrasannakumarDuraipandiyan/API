@@ -65,4 +65,10 @@ public class EmployeesController : ControllerBase
         await _repository.DeleteAsync(id);
         return NoContent();
     }
+
+    [HttpGet(nameof(GetError))]
+    public IActionResult GetError()
+    {
+        throw new NotImplementedException();
+    }
 }

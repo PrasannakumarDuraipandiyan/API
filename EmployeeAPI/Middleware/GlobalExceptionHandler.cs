@@ -6,13 +6,9 @@ namespace EmployeeAPI.Middleware;
 
 public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
-    public async ValueTask<bool> TryHandleAsync(
-    HttpContext httpContext,
-    Exception exception,
-    CancellationToken cancellationToken)
+    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        logger.LogError(
-            $"An error occurred while processing your request: {exception.Message}");
+        logger.LogError("An error occurred while processing your request: {exception.Message}", exception.Message);
 
         var problemDetails = new ProblemDetails
         {
@@ -22,9 +18,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             Detail = exception.Message
         };
 
-        await httpContext
-            .Response
-            .WriteAsJsonAsync(problemDetails, cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
         return true;
     }
