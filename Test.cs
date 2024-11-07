@@ -1,45 +1,41 @@
-using Microsoft.AspNetCore.Mvc;
-using Oracle.ManagedDataAccess.Client;
-using Telerik.Documents.SpreadsheetStreaming;
-using System.Data;
-using System.IO;
-using System.Threading.Tasks;
+async function downloadReport() {
+  const url = 'https://example.com/api/download-report';
+  const data = { // JSON data to send
+    param1: 'value1',
+    param2: 'value2',
+    // ... other parameters
+  };
 
-namespace YourNamespace
-{
-    [ApiController]
-    [Route("api/[controller]")]
-    public class SpreadsheetDownloadController : ControllerBase
-    {
-        private readonly string _connectionString = "Your Oracle Connection String";
+  try {
+    // Make the POST request to the server
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
 
-        [HttpGet("download")]
-        public async Task<IActionResult> DownloadSpreadsheet()
-        {
-            var query = "SELECT * FROM YourTable"; // Replace with your actual query
+    // Check if the response is ok (status in the range 200-299)
+    if (!response.ok) throw new Error('Network response was not ok.');
 
-            using var connection = new OracleConnection(_connectionString);
-            await connection.OpenAsync();
+    // Get the blob data
+    const blob = await response.blob();
+    
+    // Create a URL for the blob
+    const blobUrl = URL.createObjectURL(blob);
 
-            using var command = new OracleCommand(query, connection);
-            using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
-
-            using var memoryStream = new MemoryStream();
-            using (var exporter = SpreadExporter.CreateExporter(SpreadDocumentFormat.Xlsx, memoryStream))
-            {
-                var worksheet = exporter.CreateWorksheet();
-                worksheet.WriteRow(reader.GetColumnSchema().Select(col => col.ColumnName).ToArray());
-
-                while (await reader.ReadAsync())
-                {
-                    var row = new object[reader.FieldCount];
-                    reader.GetValues(row);
-                    worksheet.WriteRow(row);
-                }
-            }
-
-            var fileBytes = memoryStream.ToArray();
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "data.xlsx");
-        }
+    // Open the download in a new tab
+    const newTab = window.open(blobUrl, '_blank');
+    if (newTab) {
+      newTab.focus();
+    } else {
+      alert('Please allow popups for this website');
     }
+
+    // Release the URL after some time to free up resources
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+  } catch (error) {
+    console.error('Error downloading report:', error);
+  }
 }
