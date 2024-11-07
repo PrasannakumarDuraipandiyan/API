@@ -1,41 +1,31 @@
-async function downloadReport() {
-  const url = 'https://example.com/api/download-report';
-  const data = { // JSON data to send
-    param1: 'value1',
-    param2: 'value2',
-    // ... other parameters
-  };
+window.downloadFile = async (url, postData, filename = 'downloaded_file') => {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData)
+        });
 
-  try {
-    // Make the POST request to the server
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
+        if (!response.ok) throw new Error("Failed to fetch the file.");
 
-    // Check if the response is ok (status in the range 200-299)
-    if (!response.ok) throw new Error('Network response was not ok.');
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
 
-    // Get the blob data
-    const blob = await response.blob();
-    
-    // Create a URL for the blob
-    const blobUrl = URL.createObjectURL(blob);
+        // Create a temporary anchor element to trigger the download
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;  // Set the filename for the downloaded file
 
-    // Open the download in a new tab
-    const newTab = window.open(blobUrl, '_blank');
-    if (newTab) {
-      newTab.focus();
-    } else {
-      alert('Please allow popups for this website');
+        // Append to the body, click to start download, and remove it
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // Clean up the blob URL after some time
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+    } catch (error) {
+        console.error("Download failed:", error);
     }
-
-    // Release the URL after some time to free up resources
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
-  } catch (error) {
-    console.error('Error downloading report:', error);
-  }
-}
+};
